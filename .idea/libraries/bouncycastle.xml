@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="bouncycastle">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/bouncycastle" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/derby" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/felix" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/h2" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/jetty" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/jmock-2.5.1" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/junit" />
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/netty" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../dependecias-correto/jmock-2.5.1" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/bouncycastle" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/derby" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/felix" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/h2" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/jetty" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/jmock-2.5.1" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/junit" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/netty" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../dependecias-correto/jmock-2.5.1" recursive="false" type="SOURCES" />
+  </library>
+</component>

@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="bcprov-jdk15-136" level="project" />
+    <orderEntry type="library" name="bouncycastle" level="project" />
   </component>
 </module>
