@@ -1,3 +1,5 @@
+package ufv.chat.jxta.p2p;
+
 public class User {
 
     private ChatFunctions chat;

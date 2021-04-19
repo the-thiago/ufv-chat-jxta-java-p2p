@@ -1,3 +1,5 @@
+package ufv.chat.jxta.p2p;
+
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.discovery.DiscoveryService;
@@ -18,7 +20,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ChatFunctions {
+public class ChatFunctions  {
 //
 //    private String message = null;
 //    private NetworkManager networkManager = null;
@@ -156,4 +158,3 @@ public class ChatFunctions {
     }
 
 }
-

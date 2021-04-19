@@ -1,6 +1,8 @@
+package ufv.chat.jxta.p2p;
+
 import net.jxta.discovery.DiscoveryService;
 
-public class DiscoveryPipes implements Runnable {
+public class DiscoveryPipes  implements Runnable {
 
     private final DiscoveryService discoveryService;
 

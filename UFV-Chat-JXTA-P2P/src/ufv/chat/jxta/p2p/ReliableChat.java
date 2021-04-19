@@ -1,3 +1,5 @@
+package ufv.chat.jxta.p2p;
+
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
@@ -9,8 +11,6 @@ import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeMsgEvent;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.util.JxtaBiDiPipe;
-
-import java.io.IOException;
 
 // set up a bidirectional and reliable communication
 // between the peers using the JxtaServerPipe
@@ -59,7 +59,7 @@ public class ReliableChat {
         System.out.println(messageElement.toString());
     }
 
-    public void sendMessage() throws IOException {
+    public void sendMessage() throws Exception {
         Message message = new Message();
         StringMessageElement stringElement =
                 new StringMessageElement("Text", "teste", null);
