@@ -1,40 +1,87 @@
 package ufv.chat.jxta.p2p;
 
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
-public class ReceiveMessages implements Runnable, ActionListener {
+public class ReceiveMessages implements Runnable, ActionListener, KeyListener, FocusListener {
 
     private MessageRelay messages;
     private final ArrayList<String> knownUsers;
+
+    JTextField editText;
 
     public ReceiveMessages(MessageRelay messages) {
         this.messages = messages;
         knownUsers = new ArrayList<>();
 
-        JFrame frame = new JFrame();
-
-        JButton button = new JButton("Connected Users");
+        // Setting Connected Users Button
+        JButton button = new JButton("Known Users");
         button.addActionListener(this);
+        button.setPreferredSize(new Dimension(80, 80));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Setting Chat Messages Area
+        JTextArea chatMessages = new JTextArea(100, 10);
+        chatMessages.setEditable(false);
+        chatMessages.setFont(new  Font("SansSerif", Font.PLAIN, 15));
+        JScrollPane scrollableView = new JScrollPane(
+                chatMessages,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+        scrollableView.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new EmptyBorder(10, 0, 10, 0),
+                        new EtchedBorder()
+                )
+        );
+
+        // Setting Message Edit Text
+        editText = new JTextField(300);
+        editText.addKeyListener(this);
+        editText.setText("Type something...");
+        editText.addFocusListener(this);
+        editText.setFont(new  Font("SansSerif", Font.PLAIN, 15));
+
+        // Setting Panel
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
-        panel.setLayout(new GridLayout(0, 1));
-        panel.add(button);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(button, BorderLayout.NORTH);
+        panel.add(scrollableView, BorderLayout.CENTER);
+        panel.add(editText, BorderLayout.SOUTH);
 
-        frame.add(panel);
+        // Setting Frame
+        JFrame frame = new JFrame();
+        frame.add(panel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Chat P2P - UFV");
         frame.pack();
         frame.setVisible(true);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
 
         new Thread(this).start();
     }
@@ -70,14 +117,41 @@ public class ReceiveMessages implements Runnable, ActionListener {
             formattedMessage = username + "\n";
         }
         if (formattedMessage.isEmpty()) {
-            formattedMessage = "No user connected!";
+            formattedMessage = "No known users!";
         }
         JOptionPane.showMessageDialog(
                 null,
                 formattedMessage,
-                "User Connected",
+                "Users Connected",
                 JOptionPane.INFORMATION_MESSAGE
         );
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            // Enter key pressed
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Useless to us, from KeyListener interface
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // Useless to us, from KeyListener interface
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        editText.setText("");
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        editText.setText("Type something...");
     }
 
 }

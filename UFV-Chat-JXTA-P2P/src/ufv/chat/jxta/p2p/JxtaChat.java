@@ -94,10 +94,12 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
 
     public static void main(String[] args) {
         MessageRelay messages = new MessageRelay();
-        
+
         String name = (String) JOptionPane.showInputDialog(
-                "Please enter a username", 
-                ""
+                null,
+                "Please enter a username",
+                "Welcome to Chat P2P - UFV",
+                JOptionPane.QUESTION_MESSAGE
         );
 
         if (name.isEmpty()) {
