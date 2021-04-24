@@ -1,7 +1,6 @@
 package ufv.chat.jxta.p2p;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,7 +15,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,17 +23,50 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
-public class ReceiveMessages implements Runnable, ActionListener, KeyListener, FocusListener {
+public class ReceiveMessagesView implements Runnable, ActionListener, KeyListener, FocusListener {
 
     private MessageRelay messages;
     private final ArrayList<String> knownUsers;
 
     JTextField editText;
+    JTextArea chatMessages;
 
-    public ReceiveMessages(MessageRelay messages) {
+    public ReceiveMessagesView(MessageRelay messages) {
         this.messages = messages;
         knownUsers = new ArrayList<>();
+        setVisualInterface();
+        new Thread(this).start();
+    }
 
+    @Override
+    public void run() {
+        while (true) {
+            ArrayList<String[]> msgs = messages.getIncomingMessages();
+            if (!msgs.isEmpty()) {
+                for (String s[] : msgs) {
+                    System.out.println(s[0] + ": " + s[1]);
+                    chatMessages.append(Util.getFormattedTime() + " - " + 
+                            s[0] + ": " + s[1] + "\n");
+                }
+            }
+            ArrayList<String> usernames = messages.getUsernames();
+            for (String username : usernames) {
+                if (!knownUsers.contains(username)) {
+                    knownUsers.add(username);
+                    System.out.println(username + " joined the chat!");
+                    chatMessages.append(Util.getFormattedTime() + " - " + 
+                            username + " joined the chat!\n");
+                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void setVisualInterface() {
         // Setting Connected Users Button
         JButton button = new JButton("Known Users");
         button.addActionListener(this);
@@ -43,9 +74,9 @@ public class ReceiveMessages implements Runnable, ActionListener, KeyListener, F
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Setting Chat Messages Area
-        JTextArea chatMessages = new JTextArea(100, 10);
+        chatMessages = new JTextArea(100, 10);
         chatMessages.setEditable(false);
-        chatMessages.setFont(new  Font("SansSerif", Font.PLAIN, 15));
+        chatMessages.setFont(new Font("SansSerif", Font.PLAIN, 15));
         JScrollPane scrollableView = new JScrollPane(
                 chatMessages,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -63,7 +94,7 @@ public class ReceiveMessages implements Runnable, ActionListener, KeyListener, F
         editText.addKeyListener(this);
         editText.setText("Type something...");
         editText.addFocusListener(this);
-        editText.setFont(new  Font("SansSerif", Font.PLAIN, 15));
+        editText.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
         // Setting Panel
         JPanel panel = new JPanel();
@@ -82,39 +113,13 @@ public class ReceiveMessages implements Runnable, ActionListener, KeyListener, F
         frame.setVisible(true);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
-
-        new Thread(this).start();
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            ArrayList<String[]> msgs = messages.getIncomingMessages();
-            if (!msgs.isEmpty()) {
-                for (String s[] : msgs) {
-                    System.out.println(s[0] + ": " + s[1]);
-                }
-            }
-            ArrayList<String> usernames = messages.getUsernames();
-            for (String username : usernames) {
-                if (!knownUsers.contains(username)) {
-                    knownUsers.add(username);
-                    System.out.println(username + " joined the chat!");
-                }
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                //System.out.println(e.getMessage());
-            }
-        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String formattedMessage = "";
         for (String username : messages.getUsernames()) {
-            formattedMessage = username + "\n";
+            formattedMessage += username + "\n";
         }
         if (formattedMessage.isEmpty()) {
             formattedMessage = "No known users!";
@@ -130,7 +135,13 @@ public class ReceiveMessages implements Runnable, ActionListener, KeyListener, F
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            // Enter key pressed
+            String message = editText.getText();
+            if (!message.isEmpty()) {
+                messages.addOutgoingMessage(message);
+                chatMessages.append(Util.getFormattedTime() + " - " + 
+                        messages.getUsername() + "(you): " + message + "\n");
+                editText.setText("");
+            }
         }
     }
 

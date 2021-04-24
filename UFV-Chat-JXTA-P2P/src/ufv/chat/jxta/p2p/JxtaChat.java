@@ -20,7 +20,6 @@ import net.jxta.protocol.PipeAdvertisement;
 
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.MessageElement;
@@ -39,15 +38,14 @@ import net.jxta.protocol.ModuleSpecAdvertisement;
 
 public class JxtaChat implements DiscoveryListener, PipeMsgListener {
 
-    private static final Scanner INPUT = new Scanner(System.in);
-
-    private static final String groupName = "myP2Pchat";
-    private static final String groupDesc = "P2P chat";
-    private static final PeerGroupID groupID = IDFactory.newPeerGroupID(
-            PeerGroupID.defaultNetPeerGroupID, groupName.getBytes());
-    private static final String unicastName = "uniP2PChat";
-    private static final String multicastName = "multiP2PChat";
-    private static final String serviceName = "P2PChat";
+    private static final String GROUP_NAME = "myP2Pchat";
+    private static final String GROUP_DESC = "P2P chat";
+    private static final PeerGroupID GROUP_ID = IDFactory.newPeerGroupID(
+            PeerGroupID.defaultNetPeerGroupID, GROUP_NAME.getBytes()
+    );
+    private static final String UNICAST_NAME = "uniP2PChat";
+    private static final String MULTICAST_NAME = "multiP2PChat";
+    private static final String SERVICE_NAME = "P2PChat";
 
     private final NetworkManager manager;
     private PeerGroup netPeerGroup;
@@ -75,7 +73,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
                 new File(new File(".cache"), "Chat").toURI()
         );
 
-        int port = 9000 + new Random().nextInt(100);
+        int port = 9000 + new Random().nextInt(1000);
 
         NetworkConfigurator config = manager.getConfigurator();
         config.setTcpPort(port);
@@ -84,12 +82,6 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
         config.setTcpOutgoing(true);
         config.setUseMulticast(true);
         config.setPeerID(peerID);
-
-        // Added
-        System.out.println("porta aqui! " + port);
-        String adr = "192.168.100.48";
-        // Maybe this first line is crucial
-        //config.addSeedRendezvous(URI.create(adr + port));
     }
 
     public static void main(String[] args) {
@@ -105,7 +97,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
         if (name.isEmpty()) {
             name = "user" + new Random().nextInt(1000000);
         }
-        messages.setName(name);
+        messages.setUsername(name);
 
         try {
             JxtaChat chat = new JxtaChat(messages);
@@ -117,7 +109,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
             System.err.println("Error while starting Jxta!");
             return;
         }
-        new ReceiveMessages(messages);
+        new ReceiveMessagesView(messages);
     }
 
     public void start() {
@@ -131,7 +123,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
 
         try {
             mAdv = netPeerGroup.getAllPurposePeerGroupImplAdvertisement();
-            chatGroup = netPeerGroup.newGroup(groupID, mAdv, groupName, groupDesc);
+            chatGroup = netPeerGroup.newGroup(GROUP_ID, mAdv, GROUP_NAME, GROUP_DESC);
         } catch (Exception e) {
             //System.err.println(e.getMessage());
         }
@@ -140,8 +132,8 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
             System.err.println("Cannot start child peergroup");
         }
 
-        unicastID = IDFactory.newPipeID(chatGroup.getPeerGroupID(), unicastName.getBytes());
-        multicastID = IDFactory.newPipeID(chatGroup.getPeerGroupID(), multicastName.getBytes());
+        unicastID = IDFactory.newPipeID(chatGroup.getPeerGroupID(), UNICAST_NAME.getBytes());
+        multicastID = IDFactory.newPipeID(chatGroup.getPeerGroupID(), MULTICAST_NAME.getBytes());
 
         pipeService = chatGroup.getPipeService();
         try {
@@ -171,11 +163,11 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
         ModuleSpecAdvertisement mdadv = (ModuleSpecAdvertisement) AdvertisementFactory.newAdvertisement(ModuleSpecAdvertisement.getAdvertisementType());
         mdadv.setName("P2PChat");
         mdadv.setVersion("Version 1.0");
-        mdadv.setCreator("4c0n.nl");
+        mdadv.setCreator("sun.com");
         mdadv.setModuleSpecID(IDFactory.newModuleSpecID(mcID));
-        mdadv.setSpecURI("http://www.4c0n.nl");
+        mdadv.setSpecURI("http://www.jxta.org/Ex1");
 
-        serviceID = (PipeID) IDFactory.newPipeID(chatGroup.getPeerGroupID(), serviceName.getBytes());
+        serviceID = (PipeID) IDFactory.newPipeID(chatGroup.getPeerGroupID(), SERVICE_NAME.getBytes());
         PipeAdvertisement pipeAdv = getAdvertisement(serviceID, false);
         mdadv.setPipeAdvertisement(pipeAdv);
 
@@ -210,12 +202,10 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
             public void run() {
                 while (true) {
                     // Create Message
-                    messages.addOutgoingMessage(JxtaChat.INPUT.nextLine());
-
                     PipeAdvertisement pipeAdv = getAdvertisement(unicastID, false);
                     ArrayList<String> msgs = messages.getOutgoingMessages();
                     if (!msgs.isEmpty()) {
-                        MessageElement from = new StringMessageElement("from", messages.getName(), null);
+                        MessageElement from = new StringMessageElement("from", messages.getUsername(), null);
                         try {
                             for (HashSet<PeerID> pids : peers) {
                                 OutputPipe out = pipeService.createOutputPipe(pipeAdv, pids, 0);
@@ -258,7 +248,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
 
     @Override
     public void pipeMsgEvent(PipeMsgEvent event) {
-        //System.out.println("Message Received!!");
+        System.out.println("Received!");
 
         Message msg = event.getMessage();
         Object user = msg.getMessageElement("username");
@@ -295,11 +285,12 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
         try {
             OutputPipe out = pipeService.createOutputPipe(pipeAdv, pids, 10000);
             Message msg = new Message();
-            MessageElement username = new StringMessageElement("username", messages.getName(), null);
+            MessageElement username = new StringMessageElement("username", messages.getUsername(), null);
             msg.addMessageElement(username);
             out.send(msg);
         } catch (IOException e) {
             //System.out.println(e.getMessage());
         }
     }
+
 }

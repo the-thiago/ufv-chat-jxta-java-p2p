@@ -15,8 +15,8 @@ public class MessageRelay {
         usernames = new ArrayList<>();
     }
 
-    public synchronized void addIncomingMessage(String[] msg) {
-        incomingMessages.add(msg);
+    public synchronized void addIncomingMessage(String[] message) {
+        incomingMessages.add(message);
     }
 
     public synchronized ArrayList<String[]> getIncomingMessages() {
@@ -25,8 +25,8 @@ public class MessageRelay {
         return incomingCopy;
     }
 
-    public synchronized void addOutgoingMessage(String msg) {
-        outgoingMessages.add(msg);
+    public synchronized void addOutgoingMessage(String message) {
+        outgoingMessages.add(message);
     }
 
     public synchronized ArrayList<String> getOutgoingMessages() {
@@ -35,11 +35,11 @@ public class MessageRelay {
         return outgoingCopy;
     }
 
-    public synchronized void setName(String name) {
-        this.username = name;
+    public synchronized void setUsername(String username) {
+        this.username = username;
     }
 
-    public synchronized String getName() {
+    public synchronized String getUsername() {
         return username;
     }
 
@@ -52,4 +52,5 @@ public class MessageRelay {
     public synchronized ArrayList<String> getUsernames() {
         return usernames;
     }
+
 }
