@@ -21,6 +21,7 @@ import net.jxta.protocol.PipeAdvertisement;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.exception.PeerGroupException;
@@ -93,15 +94,16 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
 
     public static void main(String[] args) {
         MessageRelay messages = new MessageRelay();
-        do {
-            System.out.print("Please, enter your name: ");
-            String name = JxtaChat.INPUT.nextLine();
-            if (!name.isEmpty()) {
-                messages.setName(name);
-                break;
-            }
-            System.out.println("Name can not be empty!");
-        } while (true);
+        
+        String name = (String) JOptionPane.showInputDialog(
+                "Please enter a username", 
+                ""
+        );
+
+        if (name.isEmpty()) {
+            name = "user" + new Random().nextInt(1000000);
+        }
+        messages.setName(name);
 
         try {
             JxtaChat chat = new JxtaChat(messages);
