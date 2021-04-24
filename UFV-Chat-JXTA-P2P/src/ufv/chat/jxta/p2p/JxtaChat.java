@@ -115,7 +115,7 @@ public class JxtaChat implements DiscoveryListener, PipeMsgListener {
             System.err.println("Error while starting Jxta!");
             return;
         }
-        new ReceiveMessages(messages).run();
+        new ReceiveMessages(messages);
     }
 
     public void start() {
